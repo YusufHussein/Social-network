@@ -15,7 +15,7 @@ function saveUser(req, res)
 
     user.save((err, userStored) => {
         if (err)
-            return res.status(500).send({message: "Error adding user to db."});
+            return res.status(500).send({message: "Error adding user to db!"});
         else if (userStored)
             return res.status(200).send({user: userStored});
     });
@@ -27,7 +27,7 @@ function loginUser(req, res)
     var password = req.body.password;
     User.findOne({email: email}, (err, user) => {
         if (err)
-            return res.status(500).send({message: "Error logging in"});
+            return res.status(500).send({message: "Error logging in!"});
         if (user) 
         {
             bcrypt.compare(password, user.password, (err, check) => {
@@ -44,10 +44,35 @@ function loginUser(req, res)
                     }
                 } 
                 else
-                    return res.status(500).send({message: "Wrong email or password."});
+                    return res.status(500).send({message: "Wrong email or password!"});
             });
-        } else
-            return res.status(500).send({message: "Wrong email or password."});
+        }
+        else
+            return res.status(500).send({message: "Email not registered!"});
     });
 }
-   
+
+function updateUser(req, res)
+{
+    delete req.body.password;
+    if (req.params.id !== req.user.sub)
+        return res.status(403).send({message: "You do not have permissions to modify this account!"});
+
+    User.find({email: req.body.email.toLowerCase()}).exec((err, users) => {
+        var user_isset = false;
+        users.forEach((users) => {
+            if (users._id != req.params.id)
+                user_isset = true;
+        });
+        if (user_isset)
+            return res.status(403).send({message: "This email already exists!"});
+
+        User.findByIdAndUpdate(req.params.id, req.body, {new : true}, (err, userUpdated) => {
+            if (!userUpdated)
+                return res.status(404).send({message: "User Not Found!"});
+            if (err)
+                return res.status(500).send({message: "Error processing request!"});
+            return res.status(200).send({user: userUpdated});
+        });
+    });
+}
