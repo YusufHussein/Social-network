@@ -1,22 +1,37 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var UserSchema = Schema({
-    name: String,
+    name: {
+        type: String,
+        requierd: true
+    },
     email: {
         type: String,
         required: true,
         unique: true
     },
-    password: String,
+    password: {
+        type: String,
+        required: true
+    },
     image: String, 
     profession: String,
     location: String,
-    date: Date,
+    dob: {
+        type: Date,
+        required: true
+    },
     notifications: [{
         type: String
     }],
-    blocked: Boolean,
-    badpost: Number,
+    blocked: { 
+        type: Boolean,
+        default: false
+    },
+    badpost: {
+        type: Number,
+        default: 0
+    },
     following:[{
         type: mongoose.Types.ObjectId,
         ref: 'User',
