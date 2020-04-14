@@ -1,10 +1,11 @@
 const User = require('../models/user');
+const bcrypt = require('bcryptjs');
 
 function saveUser(req, res) {
     var user = new User();
     user.name = req.body.name;
     user.email = req.body.email.toLowerCase();
-    user.password = req.body.password;
+    user.password = bcrypt.hashSync(req.body.password, 8);
     user.image = req.body.image;
     user.profession = req.body.profession.toLowerCase();
     user.location = req.body.location;
@@ -16,5 +17,5 @@ function saveUser(req, res) {
         else if (userStored)
             return res.status(200).send({user: userStored});
     });
-    
+
 }
