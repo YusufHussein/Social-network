@@ -11,12 +11,12 @@ const mongoConnect = function(callback) {
             throw new Error('DB connection failed!!');
         });
 }
-const getDB = () => {
-    if (_db) {
+const getDB = () => 
+{
+    if (_db)
         return _db;
-    } else {
+    else
         throw new Error('DB connect !!');
-    }
 }
 exports.mongoConnect = mongoConnect;
 exports.getDB = getDB;
