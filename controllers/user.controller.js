@@ -1,4 +1,5 @@
-const User = require('../models/user');
+const db = require("../models");
+const User = db.users;
 const bcrypt = require('bcryptjs');
 var jwt = require('../services/jwt');
 var mongoosePaginate = require('mongoose-pagination');
@@ -81,7 +82,17 @@ exports.update = (req, res) =>
 
 
 exports.findAll = (req, res) => {
-  
+    console.log("Test Find All")
+    User.find()
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send({
+          message:
+            err.message || "Some error occurred while retrieving tutorials."
+        });
+      });
 };
 
 exports.findOne = (req, res) => {

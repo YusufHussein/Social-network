@@ -1,7 +1,7 @@
 
 module.exports = app => 
 {
-  const users = require("../controllers/user.js");
+  const users = require("../controllers/user.controller.js");
 
   var router = require("express").Router();
 
@@ -20,5 +20,5 @@ module.exports = app =>
   // delete an account with id
   router.delete("/:id", users.delete);
   
-  //app.use("/api/users", router);
+  app.use("/api/users", router);
 };
