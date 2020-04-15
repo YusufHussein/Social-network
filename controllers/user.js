@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 var jwt = require('../services/jwt');
 var mongoosePaginate = require('mongoose-pagination');
 
-function saveUser(req, res)
+exports.create = (req, res) =>
 {
     var user = new User();
     user.name = req.body.name;
@@ -14,7 +14,8 @@ function saveUser(req, res)
     user.location = req.body.location;
     user.dob = req.body.dob;
 
-    user.save((err, userStored) => {
+    user.save((err, userStored) => 
+    {
         if (err)
             return res.status(500).send({message: "Error adding user to db!"});
         else if (userStored)
@@ -22,7 +23,7 @@ function saveUser(req, res)
     });
 }
 
-function loginUser(req, res)
+exports.login = (req, res) =>
 {
     var email = req.body.email;
     var password = req.body.password;
@@ -53,7 +54,7 @@ function loginUser(req, res)
     });
 }
 
-function updateUser(req, res)
+exports.update = (req, res) =>
 {
     delete req.body.password;
     if (req.params.id !== req.user.sub)
@@ -78,28 +79,15 @@ function updateUser(req, res)
     });
 }
 
-/*
-function getUsers(req, res)
-{
-    var identity_user_id = req.user.sub;
-    var itemsPerPage = 10;
-    var page = 1;
-    if (req.params.page)
-        page = req.params.page;
-    User.find().sort('_id').paginate(page, itemsPerPage, (err, users, total) => {
-        if (!users)
-            return res.status(404).send({message: "Users Not Found."});
-        if (err)
-            return res.status(500).send({message: "Request Error."});
 
-        followUserIds(identity_user_id).then((value) => {
-            return res.status(200).send({
-                users,
-                user_following: value.following,
-                user_follow_me: value.followed,
-                total,
-                pages: Math.ceil(total / itemsPerPage)
-            });
-        });
-    });
-}*/
+exports.findAll = (req, res) => {
+  
+};
+
+exports.findOne = (req, res) => {
+  
+};
+
+exports.delete = (req, res) => {
+  
+};
