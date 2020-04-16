@@ -1,59 +1,8 @@
 const db = require("../models");
-const User = db.users;
+const User = db.user;
 const bcrypt = require('bcryptjs');
 var jwt = require('../services/jwt');
 var mongoosePaginate = require('mongoose-pagination');
-
-exports.create = (req, res) =>
-{
-    console.log(req)
-    console.log(req.body)
-    var user = new User();
-    user.name = req.body.name;
-    user.email = req.body.email.toLowerCase();
-    user.password = bcrypt.hashSync(req.body.password, 8);
-    user.image = req.body.image;
-    user.location = req.body.location;
-    user.dateOfBirth = req.body.dateOfBirth;
-    user.save((err, userStored) => 
-    {
-        if (err)
-            return res.status(500).send({message: "Error adding user to db!"});
-        else if (userStored)
-            return res.status(200).send({user: userStored});
-    });
-}
-
-exports.login = (req, res) =>
-{
-    var email = req.body.email;
-    var password = req.body.password;
-    User.findOne({email: email}, (err, user) => {
-        if (err)
-            return res.status(500).send({message: "Error logging in!"});
-        if (user) 
-        {
-            bcrypt.compare(password, user.password, (err, check) => {
-                if (check) 
-                {
-                    if (req.body.gettoken)
-                    {
-                        return res.status(200).send({ token: jwt.createtoken(user)});
-                    }
-                    else
-                    {
-                        user.password = undefined; //hide password/ re-login
-                        return res.status(200).send({user});
-                    }
-                } 
-                else
-                    return res.status(500).send({message: "Wrong email or password!"});
-            });
-        }
-        else
-            return res.status(500).send({message: "Email not registered!"});
-    });
-}
 
 exports.update = (req, res) =>
 {
@@ -73,8 +22,9 @@ exports.update = (req, res) =>
         User.findByIdAndUpdate(req.params.id, req.body, {new : true}, (err, userUpdated) => {
             if (!userUpdated)
                 return res.status(404).send({message: "User Not Found!"});
-            if (err)
-                return res.status(500).send({message: "Error processing request!"});
+            if (err) {
+                return res.status(500).send({message: err.errmsg, error:err});
+            }
             return res.status(200).send({user: userUpdated});
         });
     });
@@ -88,10 +38,7 @@ exports.findAll = (req, res) => {
         res.send(data);
       })
       .catch(err => {
-        res.status(500).send({
-          message:
-            err.message || "Some error occurred while retrieving tutorials."
-        });
+        res.status(500).send({message: err.errmsg, error:err});
       });
 };
 
