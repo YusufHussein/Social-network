@@ -1,6 +1,9 @@
-module.exports = (mongoose) => {
-  var UserSchema = mongoose.Schema({
-    name: {
+const mongoose = require("mongoose");
+
+const User = mongoose.model(
+  "User",
+  mongoose.Schema({
+    username: {
       type: String,
       requierd: true,
     },
@@ -18,7 +21,6 @@ module.exports = (mongoose) => {
     location: String,
     dateOfBirth: {
       type: Date,
-      required: true,
     },
     notifications: [
       {
@@ -35,18 +37,17 @@ module.exports = (mongoose) => {
     },
     following: [
       {
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       },
     ],
-  });
+    roles: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Role",
+      },
+    ],
+  })
+);
 
-  UserSchema.method("toJSON", function () {
-    const { __v, _id, ...object } = this.toObject();
-    object.id = _id;
-    return object;
-  });
-
-  const User = mongoose.model("user", UserSchema);
-  return User;
-};
+module.exports = User;
