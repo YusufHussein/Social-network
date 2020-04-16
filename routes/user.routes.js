@@ -1,24 +1,20 @@
+const { authJwt } = require("../middlewares");
+const controller = require("../controllers/user.controller");
 
-module.exports = app => 
-{
-  const users = require("../controllers/user.controller.js");
-
-  var router = require("express").Router();
-
-  //create new user
-  router.post("/", users.create);
+module.exports = function (app) {
+  const router = require("express").Router();
 
   // Retrieve all users
-  router.get("/", users.findAll);
+  router.get("/", [authJwt.verifyToken, authJwt.isAdmin], controller.findAll);
 
   // Retrieve a single user with id
-  router.get("/:id", users.findOne);
+  router.get("/:id", controller.findOne);
 
   // Update a user with id
-  router.put("/:id", users.update);
+  router.put("/:id", controller.update);
 
   // delete an account with id
-  router.delete("/:id", users.delete);
-  
+  router.delete("/:id", controller.delete);
+
   app.use("/api/users", router);
 };
