@@ -6,15 +6,15 @@ var mongoosePaginate = require('mongoose-pagination');
 
 exports.create = (req, res) =>
 {
+    console.log(req)
+    console.log(req.body)
     var user = new User();
     user.name = req.body.name;
     user.email = req.body.email.toLowerCase();
     user.password = bcrypt.hashSync(req.body.password, 8);
     user.image = req.body.image;
-    user.profession = req.body.profession.toLowerCase();
     user.location = req.body.location;
-    user.dob = req.body.dob;
-
+    user.dateOfBirth = req.body.dateOfBirth;
     user.save((err, userStored) => 
     {
         if (err)

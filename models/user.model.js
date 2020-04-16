@@ -15,9 +15,8 @@ module.exports = (mongoose) => {
       required: true,
     },
     image: String,
-    profession: String,
     location: String,
-    dob: {
+    dateOfBirth: {
       type: Date,
       required: true,
     },
@@ -30,7 +29,7 @@ module.exports = (mongoose) => {
       type: Boolean,
       default: false,
     },
-    badpost: {
+    post: {
       type: Number,
       default: 0,
     },
