@@ -1,3 +1,5 @@
 module.exports = {
-  url: "mongodb://localhost:27017/mwa_socail_network?socketTimeoutMS=5000",
+  HOST: "localhost",
+  PORT: 27017,
+  DB: "mwa_social_network_db"
 };
