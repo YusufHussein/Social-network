@@ -75,5 +75,11 @@ exports.addBad = (req, res) =>
 
 exports.delBad = (req, res) =>
 {
-
+    BadWord.deleteOne({word: req.params.word},
+        err =>
+        {
+            if (err)
+                res.status(500).send({ message: err });
+            res.status(200).send({ message: `'${req.params.word}' is no longer marked as bad word`});
+        });
 }

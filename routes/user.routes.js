@@ -20,7 +20,7 @@ module.exports = function (app) {
   router.post("/bad", [authJwt.verifyToken, authJwt.isAdmin], controller.addBad);
 
   //delete a word from bad words list
-  router.delete("/bad", [authJwt.verifyToken, authJwt.isAdmin], controller.delBad);
+  router.delete("/bad/:word", [authJwt.verifyToken, authJwt.isAdmin], controller.delBad);
 
   app.use("/api/users", router);
 };
