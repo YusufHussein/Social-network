@@ -11,4 +11,4 @@ const Bad_words = mongoose.model(
     })
 );
 
-module.exports = Ad;
+module.exports = Bad_words;
