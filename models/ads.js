@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 const Ad = mongoose.model(
     "Ad",
-    mogoose.Schema({
+    mongoose.Schema({
         location: String,
         profession: String,
         age: Number,
