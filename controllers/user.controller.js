@@ -113,3 +113,14 @@ exports.addPost = (req, res) =>
         })
     })
 }
+
+exports.getAllPosts = (req, res) =>
+{
+    Post.find()
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send({message: err.errmsg, error:err});
+      });
+}
