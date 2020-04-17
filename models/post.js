@@ -31,7 +31,8 @@ const Post = mongoose.model(
     image: String,
     date: {
         type: Date,
-        default: Date.now
+        default: Date.now,
+        required: true
     },
     hidden: {
         type: Boolean,
