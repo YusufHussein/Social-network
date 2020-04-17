@@ -7,8 +7,8 @@ db.mongoose = mongoose;
 
 db.user = require("./user.model");
 db.role = require("./role.model");
-db.ad = require("./ads.js");
-db.post = require("./post.js");
+db.ad = require("./ads.model.js");
+db.post = require("./post.model.js");
 db.bad_word = require("./bad_words.js");
 
 db.ROLES = ["user", "admin"];

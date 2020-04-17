@@ -72,3 +72,8 @@ exports.addBad = (req, res) =>
         })
     })
 }
+
+exports.delBad = (req, res) =>
+{
+    
+}
