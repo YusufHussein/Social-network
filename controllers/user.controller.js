@@ -24,9 +24,8 @@ exports.update = (req, res) =>
         User.findByIdAndUpdate(req.params.id, req.body, {new : true}, (err, userUpdated) => {
             if (!userUpdated)
                 return res.status(404).send({message: "User Not Found!"});
-            if (err) {
+            if (err)
                 return res.status(500).send({message: err.errmsg, error:err});
-            }
             return res.status(200).send({user: userUpdated});
         });
     });
@@ -88,44 +87,43 @@ exports.delBad = (req, res) =>
 exports.addPost = (req, res) =>
 {
     let bad = false;
-    BadWord.find().exec((err, words) =>
+    BadWord.find().then(words =>
     {
         const body = req.body.text;
         const badCondition = (word) => body.search(word.word)>=0;
         if(words.some(badCondition)) 
-        {console.log("YaayBaaad");
-            User.update({_id: req.userId},
-                    {$inc: {bad_post_count: 1} });
+        {
+            User.findOneAndUpdate({_id: req.userId},
+                    {$inc: {bad_post_count: 1} }).exec();
             bad = true;
         }
-    });
-    var post = new Post(
+
+        var post = new Post(
         {
             user: req.userId,
             text: req.body.text,
             image: req.body.image,
             notify: req.body.notify,
             hidden: bad
-        }
-    )
-    console.log('hussien::' + bad);
-    post.save((err, post) => 
-    {
-        if(err)
-        {
-            res.status(500).send({ message: err });
-            return;
-        }
-        post.save(err =>
+        })
+        post.save((err, post) => 
         {
             if(err)
             {
                 res.status(500).send({ message: err });
                 return;
             }
-            res.status(200).send({message: `Post added successfully`});
+            post.save(err =>
+            {
+                if(err)
+                {
+                    res.status(500).send({ message: err });
+                    return;
+                }
+                res.status(200).send({message: `Post added successfully`});
+            })
         })
-    })
+    });
 }
 
 exports.getAllPosts = (req, res) =>
