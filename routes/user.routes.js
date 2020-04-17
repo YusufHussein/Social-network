@@ -2,11 +2,14 @@ const { authJwt } = require("../middlewares");
 const controller = require("../controllers/user.controller");
 
 module.exports = function (app) {
-  const router = require("express").Router();
+  const router = require("express").Router({strict: true});
 
   // Retrieve all users
   router.get("/", [authJwt.verifyToken, authJwt.isAdmin], controller.findAll);
-
+  
+  //Retrieve all posts
+  router.get("/post", [authJwt.verifyToken, authJwt.isAdmin], controller.getAllPosts);
+  
   // Retrieve a single user with id
   router.get("/:id", [authJwt.verifyToken], controller.findOne);
 
@@ -21,6 +24,13 @@ module.exports = function (app) {
 
   //delete a word from bad words list
   router.delete("/bad/:word", [authJwt.verifyToken, authJwt.isAdmin], controller.delBad);
+
+  
+
+  //Add new post
+  router.post("/post", [authJwt.verifyToken], controller.addPost);
+
+  
 
   app.use("/api/users", router);
 };
