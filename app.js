@@ -30,6 +30,7 @@ app.use(express.static(path.join(__dirname, "public")));
 db.mongoose
   .connect(`mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`, {
     useNewUrlParser: true,
+    useCreateIndex: true,
     useUnifiedTopology: true,
   })
   .then(() => {
