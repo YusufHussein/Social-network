@@ -31,7 +31,7 @@ const User = mongoose.model(
       type: Boolean,
       default: false,
     },
-    post: {
+    bad_post_count: {
       type: Number,
       default: 0,
     },

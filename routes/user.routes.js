@@ -8,13 +8,13 @@ module.exports = function (app) {
   router.get("/", [authJwt.verifyToken, authJwt.isAdmin], controller.findAll);
 
   // Retrieve a single user with id
-  router.get("/:id", controller.findOne);
+  router.get("/:id", [authJwt.verifyToken], controller.findOne);
 
   // Update a user with id
-  router.put("/:id", controller.update);
+  router.put("/:id", [authJwt.verifyToken], controller.update);
 
   // delete an account with id
-  router.delete("/:id", controller.delete);
+  router.delete("/:id", [authJwt.verifyToken], controller.delete);
 
   app.use("/api/users", router);
 };
