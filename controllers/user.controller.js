@@ -1,5 +1,6 @@
 const db = require("../models");
 const User = db.user;
+const BadWord = db.bad_word;
 const bcrypt = require('bcryptjs');
 var jwt = require('../services/jwt');
 var mongoosePaginate = require('mongoose-pagination');
@@ -49,3 +50,25 @@ exports.findOne = (req, res) => {
 exports.delete = (req, res) => {
   
 };
+
+exports.addBad = (req, res) =>
+{
+    const bWord = new BadWord({ word: req.body.word });
+    bWord.save((err, bWord) =>
+    {
+        if (err)
+        {
+            res.status(500).send({ message: err });
+            return;
+        }
+        bWord.save(err =>
+        {
+            if (err)
+            {
+                res.status(500).send({ message: err });
+                return;
+            }
+            res.send({ message: `'${bWord.word}' was added as a bad word`});
+        })
+    })
+}

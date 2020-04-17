@@ -11,10 +11,13 @@ module.exports = function (app) {
   router.get("/:id", [authJwt.verifyToken], controller.findOne);
 
   // Update a user with id
-  router.put("/:id", [authJwt.verifyToken], controller.update);
+  router.put("/:id", [authJwt.verifyToken, authJwt.isAdminOrSelf], controller.update);
 
   // delete an account with id
-  router.delete("/:id", [authJwt.verifyToken], controller.delete);
+  router.delete("/:id", [authJwt.verifyToken, authJwt.isAdminOrSelf], controller.delete);
+
+  //add a word to bad words list
+  router.post("/bad", [authJwt.verifyToken, authJwt.isAdmin], controller.addBad);
 
   app.use("/api/users", router);
 };

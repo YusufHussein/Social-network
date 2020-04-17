@@ -96,5 +96,6 @@ isAdminOrSelf = (req, res, next) => {
 const authJwt = {
   verifyToken,
   isAdmin,
+  isAdminOrSelf
 };
 module.exports = authJwt;
