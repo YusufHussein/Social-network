@@ -68,12 +68,12 @@ exports.addBad = (req, res) =>
                 res.status(500).send({ message: err });
                 return;
             }
-            res.send({ message: `'${bWord.word}' was added as a bad word`});
+            res.status(200).send({ message: `'${bWord.word}' was added as a bad word`});
         })
     })
 }
 
 exports.delBad = (req, res) =>
 {
-    
+
 }
