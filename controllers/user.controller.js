@@ -1,6 +1,7 @@
 const db = require("../models");
 const User = db.user;
 const BadWord = db.bad_word;
+const Post = db.post;
 const bcrypt = require('bcryptjs');
 var jwt = require('../services/jwt');
 var mongoosePaginate = require('mongoose-pagination');
@@ -33,7 +34,7 @@ exports.update = (req, res) =>
 
 
 exports.findAll = (req, res) => {
-    console.log("Test Find All")
+    //console.log("Test Find All")
     User.find()
       .then(data => {
         res.send(data);
@@ -82,4 +83,33 @@ exports.delBad = (req, res) =>
                 res.status(500).send({ message: err });
             res.status(200).send({ message: `'${req.params.word}' is no longer marked as bad word`});
         });
+}
+
+exports.addPost = (req, res) =>
+{
+    const post = new Post(
+        {
+            user: req.userId,
+            text: req.body.text,
+            image: req.body.image,
+            notify: req.body.notify
+        }
+    )
+    post.save((err, post) => 
+    {
+        if(err)
+        {
+            res.status(500).send({ message: err });
+            return;
+        }
+        post.save(err =>
+        {
+            if(err)
+            {
+                res.status(500).send({ message: err });
+                return;
+            }
+            res.status(200).send({message: `Post added successfully`});
+        })
+    })
 }
