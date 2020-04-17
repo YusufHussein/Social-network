@@ -87,14 +87,28 @@ exports.delBad = (req, res) =>
 
 exports.addPost = (req, res) =>
 {
-    const post = new Post(
+    let bad = false;
+    BadWord.find().exec((err, words) =>
+    {
+        const body = req.body.text;
+        const badCondition = (word) => body.search(word.word)>=0;
+        if(words.some(badCondition)) 
+        {console.log("YaayBaaad");
+            User.update({_id: req.userId},
+                    {$inc: {bad_post_count: 1} });
+            bad = true;
+        }
+    });
+    var post = new Post(
         {
             user: req.userId,
             text: req.body.text,
             image: req.body.image,
-            notify: req.body.notify
+            notify: req.body.notify,
+            hidden: bad
         }
     )
+    console.log('hussien::' + bad);
     post.save((err, post) => 
     {
         if(err)
