@@ -31,6 +31,9 @@ module.exports = function (app) {
   //unhide a post
   router.post("/badpost", [authJwt.verifyToken, authJwt.isAdmin], controller.postOk);
 
+  //search posts with term
+  router.get("/feed/:term", [authJwt.verifyToken], controller.searchFeed);
+
   // Retrieve a single user with id
   router.get("/:id", [authJwt.verifyToken], controller.findOne);
 
