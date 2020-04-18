@@ -173,6 +173,7 @@ exports.addPost = (req, res) =>
 exports.getAllPosts = (req, res) =>
 {
     Post.find()
+    .sort({date: -1})
       .then(data => {
         res.send(data);
       })
@@ -367,7 +368,9 @@ exports.searchFeed = (req, res) =>
         let feed = [];
         let userAge = new Date().getFullYear() - result.dateOfBirth.getFullYear();
         console.log(typeof userAge);
-        Post.find({$and: [{$or: [{user:{$in : result.following}}, {user:req.userId}]}, {text: {$regex : `.*${req.params.term}.*`}}]}).then(posts =>
+        Post.find({$and: [{$or: [{user:{$in : result.following}}, {user:req.userId}]}, {text: {$regex : `.*${req.params.term}.*`}}]})
+        .sort({date: -1})
+        .then(posts =>
         {
             feed = posts.concat(feed);
             Adv.find({$or :
@@ -383,7 +386,8 @@ exports.searchFeed = (req, res) =>
                         ]}
                     ]}
                 ]
-            }).then(ads =>
+            })
+            .then(ads =>
             {
                 res.send(ads.concat(feed));
             });
@@ -398,7 +402,9 @@ exports.getFeed = (req, res) =>
         let feed = [];
         let userAge = new Date().getFullYear() - result.dateOfBirth.getFullYear();
         console.log(typeof userAge);
-        Post.find({$or: [{user:{$in : result.following}}, {user:req.userId}]}).then(posts =>
+        Post.find({$or: [{user:{$in : result.following}}, {user:req.userId}]})
+        .sort({date: -1})
+        .then(posts =>
         {
             feed = posts.concat(feed);
             Adv.find({$or :
@@ -414,7 +420,8 @@ exports.getFeed = (req, res) =>
                         ]}
                     ]}
                 ]
-            }).then(ads =>
+            })
+            .then(ads =>
             {
                 res.send(ads.concat(feed));
             });
