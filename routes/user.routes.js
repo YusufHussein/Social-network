@@ -16,8 +16,8 @@ module.exports = function (app) {
   // Update a user with id
   router.put("/:id", [authJwt.verifyToken, authJwt.isAdminOrSelf], controller.update);
 
-  // delete an account with id
-  router.delete("/:id", [authJwt.verifyToken, authJwt.isAdminOrSelf], controller.delete);
+  // delete an account with id //Future release
+  //router.delete("/:id", [authJwt.verifyToken, authJwt.isAdminOrSelf], controller.delete);
 
   //add a word to bad words list
   router.post("/bad", [authJwt.verifyToken, authJwt.isAdmin], controller.addBad);

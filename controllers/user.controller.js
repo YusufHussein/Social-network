@@ -55,9 +55,9 @@ exports.findOne = (req, res) =>
     });
 };
 
-exports.delete = (req, res) => {
+/* exports.delete = (req, res) => {
   
-};
+}; */
 
 exports.addBad = (req, res) =>
 {
@@ -177,5 +177,25 @@ exports.getAllPosts = (req, res) =>
 
 exports.toggleFollow = (req, res) =>
 {
-
+    User.findOne({_id: req.userId}, {following: 1}, (err, result) =>
+    {
+        if(result.following.indexOf(req.body.id) < 0)
+        {
+            User.updateOne({_id: req.userId},
+            {$push: {following: req.body.id}})
+            .then(()=>
+            {
+                res.status(200).send({message: "User followed"});
+            });
+        }
+        else
+        {
+            User.updateOne({_id: req.userId},
+            {$pull: {following: req.body.id}})
+            .then(()=>
+            {
+                res.status(200).send({message: "User unfollowed"});
+            });
+        }
+    })
 }
