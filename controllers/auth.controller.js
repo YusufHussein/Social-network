@@ -104,6 +104,7 @@ exports.signin = (req, res) => {
         username: user.username,
         email: user.email,
         roles: authorities,
+        blocked: user.blocked,
         accessToken: token
       });
     });
