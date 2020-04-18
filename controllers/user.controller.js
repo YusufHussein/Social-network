@@ -43,8 +43,16 @@ exports.findAll = (req, res) =>
       });
 };
 
-exports.findOne = (req, res) => {
-  
+exports.findOne = (req, res) => 
+{
+  User.findOne({_id: req.params.id})
+  .then(data =>
+    {
+        res.send(data);
+    })
+    .catch(err => {
+        res.status(500).send({message: err.errmsg, error:err});
+    });
 };
 
 exports.delete = (req, res) => {
@@ -104,7 +112,7 @@ exports.delBad = (req, res) =>
         {
             if (err)
                 res.status(500).send({ message: err });
-            res.status(200).send({ message: `'${req.params.word}' is no longer marked as bad word`});
+            res.status(200).send({ message: `'${req.params.word}' is no longer marked as bad word (Future posts only)`});
         });
 }
 
@@ -165,4 +173,9 @@ exports.getAllPosts = (req, res) =>
       .catch(err => {
         res.status(500).send({message: err.errmsg, error:err});
       });
+}
+
+exports.toggleFollow = (req, res) =>
+{
+
 }

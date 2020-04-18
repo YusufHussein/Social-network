@@ -25,7 +25,8 @@ module.exports = function (app) {
   //delete a word from bad words list
   router.delete("/bad/:word", [authJwt.verifyToken, authJwt.isAdmin], controller.delBad);
 
-  
+  //follow/unfollow a user as self
+  router.post("/follow", [authJwt.verifyToken], controller.toggleFollow);
 
   //Add new post
   router.post("/post", [authJwt.verifyToken], controller.addPost);
