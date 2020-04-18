@@ -30,7 +30,9 @@ const Post = mongoose.model(
                 }
         }],
         text: String,
-        image: String,
+        image: [
+            String
+        ],
         date: {
             type: Date,
             default: Date.now,

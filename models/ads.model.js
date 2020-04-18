@@ -5,7 +5,7 @@ const Ad = mongoose.model(
         location: String,
         age: Number,
         isGreater: Boolean,
-        image: String,
+        image: [String],
         body: String
     })
 );
