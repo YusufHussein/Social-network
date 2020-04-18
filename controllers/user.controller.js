@@ -362,21 +362,37 @@ exports.acceptForgive = (req, res) =>
 
 exports.searchFeed = (req, res) =>
 {
-    /* User.findOne({_id: req.userId}, {following: true}, (err, result) =>
+    User.findOne({_id: req.userId}, {following: true, location: true, dateOfBirth: true}, (err, result) =>
     {
-        const following = result.following;
-        feed = [];
-        Post.find({user : {$in : following}}).then(posts =>
+        let feed = [];
+        let userAge = new Date().getFullYear() - result.dateOfBirth.getFullYear();
+        console.log(typeof userAge);
+        Post.find({$and: [{$or: [{user:{$in : result.following}}, {user:req.userId}]}, {text: {$regex : `.*${req.params.term}.*`}}]}).then(posts =>
         {
             feed = posts.concat(feed);
-            console.log(feed);
-            res.send(feed);
+            Adv.find({$or :
+                [
+                    {$and: [{location : result.location}, {age: null}]},
+                    {$and: [{location: null, age: null}]},
+                    {$and: 
+                    [
+                        {location: result.location},
+                        {$or: [
+                            {$and: [{isGreater: true}, {age: {$lte: userAge}}]},
+                            {$and: [{isGreater: false}, {age: {$gte: userAge}}]}
+                        ]}
+                    ]}
+                ]
+            }).then(ads =>
+            {
+                res.send(ads.concat(feed));
+            });
         });
-    }) */
+    });
 }
 
 exports.getFeed = (req, res) =>
-{//not tested
+{
     User.findOne({_id: req.userId}, {following: true, location: true, dateOfBirth: true}, (err, result) =>
     {
         let feed = [];
