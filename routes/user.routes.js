@@ -31,6 +31,8 @@ module.exports = function (app) {
   //Add new post
   router.post("/post", [authJwt.verifyToken], controller.addPost);
 
+  router.post("/comment", [authJwt.verifyToken], controller.comment);
+
   
 
   app.use("/api/users", router);

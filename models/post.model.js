@@ -14,7 +14,6 @@ const Post = mongoose.model(
             ref: 'User'
         }],
         comments: [{
-            comment: {
                 user: {
                     type: mongoose.Types.ObjectId,
                     ref: 'User',
@@ -23,9 +22,12 @@ const Post = mongoose.model(
                 text: {
                     type: String,
                     required: true
+                },
+                date: {
+                    type: Date,
+                    default: Date.now,
+                    required: true
                 }
-            }
-
         }],
         text: String,
         image: String,
