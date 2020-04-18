@@ -235,3 +235,30 @@ exports.getAllBad = (req, res) =>
         res.status(500).send({message: err.errmsg, error:err});
       });
 }
+
+exports.toggleLike = (req, res) =>
+{
+    Post.findOne({_id: req.body.pId}, {likes: 1}, (err, result) =>
+    {
+        if(result.likes.indexOf(req.userId) < 0)
+        {
+            Post.updateOne({_id: req.body.pId},
+            {$push: {likes: req.userId}},
+            err=> {
+                if(err)
+                    console.log(err);
+                res.status(200).send({message: "post liked!"});
+            });
+        }
+        else
+        {
+            Post.updateOne({_id: req.body.pId},
+            {$pull: {likes: req.userId}})
+            .then(()=>
+            {
+                res.status(200).send({message: "post unliked"});
+            });
+        }
+    })
+    
+}

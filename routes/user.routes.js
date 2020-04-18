@@ -41,7 +41,8 @@ module.exports = function (app) {
   //Uncomment
   router.delete("/comment/:pid/:id", [authJwt.verifyToken], controller.unComment);
   
-
+  //like/unlike a post
+  router.post("/like", [authJwt.verifyToken], controller.toggleLike);
 
   app.use("/api/users", router);
 };
