@@ -158,6 +158,10 @@ exports.addPost = (req, res) =>
                     res.status(500).send({ message: err });
                     return;
                 }
+                if(req.body.notify)
+                {
+                    //User.find({following: {$in: [req.userID]}})
+                }
                 res.status(200).send({message: `Post added successfully`});
             })
         })
@@ -198,4 +202,15 @@ exports.toggleFollow = (req, res) =>
             });
         }
     })
+}
+
+exports.comment = (req, res) =>
+{
+    Post.updateOne({_id: req.body.pId},
+        {$push: {comments: {user: req.userId, text: req.body.text}}},
+        err=> {
+            if(err)
+                console.log(err);
+            res.status(200).send({message: "commented!"});
+        });
 }
