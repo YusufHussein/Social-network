@@ -386,7 +386,7 @@ exports.searchFeed = (req, res) =>
                         ]}
                     ]}
                 ]
-            })
+            }, {body: 1, image: 1})
             .then(ads =>
             {
                 res.send(ads.concat(feed));
@@ -420,7 +420,7 @@ exports.getFeed = (req, res) =>
                         ]}
                     ]}
                 ]
-            })
+            }, {body: 1, image: 1})
             .then(ads =>
             {
                 res.send(ads.concat(feed));
