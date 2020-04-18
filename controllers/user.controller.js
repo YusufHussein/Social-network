@@ -2,6 +2,7 @@ const db = require("../models");
 const User = db.user;
 const BadWord = db.bad_word;
 const Post = db.post;
+const Adv = db.ad;
 const bcrypt = require('bcryptjs');
 var jwt = require('../services/jwt');
 var mongoosePaginate = require('mongoose-pagination');
@@ -143,7 +144,7 @@ exports.addPost = (req, res) =>
             image: req.body.image,
             notify: req.body.notify,
             hidden: bad
-        })
+        });
         post.save((err, post) => 
         {
             if(err)
@@ -260,5 +261,33 @@ exports.toggleLike = (req, res) =>
             });
         }
     })
-    
+}
+
+exports.addAdv = (req, res) =>
+{
+    const adv = new Adv(
+    {
+        location: req.body.location,
+        age: req.body.age,
+        isGreater: req.body.isgreater,
+        image: req.body.image,
+        body: req.body.body
+    });
+    adv.save((err, adv) =>
+    {
+        if(err)
+        {
+            res.status(500).send({ message: err });
+            return;
+        }
+        adv.save(err =>
+        {
+            if(err)
+            {
+                res.status(500).send({ message: err });
+                return;
+            }
+            res.status(201).send({message: `Adv added successfully`});
+        })
+    });
 }

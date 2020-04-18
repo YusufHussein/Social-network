@@ -25,7 +25,6 @@ module.exports = function (app) {
   //add a word to bad words list
   router.post("/bad", [authJwt.verifyToken, authJwt.isAdmin], controller.addBad);
 
-
   //delete a word from bad words list
   router.delete("/bad/:word", [authJwt.verifyToken, authJwt.isAdmin], controller.delBad);
 
@@ -43,6 +42,9 @@ module.exports = function (app) {
   
   //like/unlike a post
   router.post("/like", [authJwt.verifyToken], controller.toggleLike);
+
+  //add adv
+  router.post("/adv", [authJwt.verifyToken, authJwt.isAdmin], controller.addAdv);
 
   app.use("/api/users", router);
 };

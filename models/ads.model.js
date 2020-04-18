@@ -3,9 +3,8 @@ const Ad = mongoose.model(
     "Ad",
     mongoose.Schema({
         location: String,
-        profession: String,
         age: Number,
-        isgreater: Boolean,
+        isGreater: Boolean,
         image: String,
         body: String
     })
