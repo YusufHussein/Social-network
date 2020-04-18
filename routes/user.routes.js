@@ -28,6 +28,9 @@ module.exports = function (app) {
   //get all bad posts for review
   router.get("/badpost", [authJwt.verifyToken, authJwt.isAdmin], controller.getAllBPost);
 
+  //unhide a post
+  router.post("/badpost", [authJwt.verifyToken, authJwt.isAdmin], controller.postOk);
+
   // Retrieve a single user with id
   router.get("/:id", [authJwt.verifyToken], controller.findOne);
 

@@ -325,6 +325,7 @@ exports.getAllForgive = (req, res) =>
         res.status(500).send({message: err.errmsg, error:err});
       });
 }
+
 exports.getAllBPost = (req, res) =>
 {
     Post.find({hidden: true})
@@ -334,6 +335,20 @@ exports.getAllBPost = (req, res) =>
       .catch(err => {
         res.status(500).send({message: err.errmsg, error:err});
       });
+}
+
+exports.postOk = (req, res) =>
+{
+    Post.findOneAndUpdate({_id: req.body.pid},
+        {$set: {hidden: false} }).then(()=>
+        {
+            User.findOneAndUpdate({_id: req.userId},
+            {$inc: {bad_post_count: -1} }).then(()=>
+            {
+                res.status(200).send({message: "Post is set to okay"});
+            });
+        });
+    
 }
 
 exports.acceptForgive = (req, res) =>
