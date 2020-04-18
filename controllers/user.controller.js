@@ -401,7 +401,6 @@ exports.getFeed = (req, res) =>
     {
         let feed = [];
         let userAge = new Date().getFullYear() - result.dateOfBirth.getFullYear();
-        console.log(typeof userAge);
         Post.find({$or: [{user:{$in : result.following}}, {user:req.userId}]})
         .sort({date: -1})
         .then(posts =>
