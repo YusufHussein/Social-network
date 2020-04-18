@@ -3,6 +3,7 @@ const User = db.user;
 const BadWord = db.bad_word;
 const Post = db.post;
 const Adv = db.ad;
+const ActiveRequest = db.active_request;
 const bcrypt = require('bcryptjs');
 var jwt = require('../services/jwt');
 var mongoosePaginate = require('mongoose-pagination');
@@ -290,4 +291,70 @@ exports.addAdv = (req, res) =>
             res.status(201).send({message: `Adv added successfully`});
         })
     });
+}
+
+exports.forgive = (req, res) =>
+{
+    const forgive = new ActiveRequest({user: req.userId, message: req.body.message});
+    forgive.save((err, forgive) =>
+    {
+        if(err)
+        {
+            res.status(500).send({ message: err });
+            return;
+        }
+        forgive.save(err =>
+        {
+            if(err)
+            {
+                res.status(500).send({ message: err });
+                return;
+            }
+            res.status(200).send({message: `Request recieved`});
+        })
+    });
+}
+
+exports.getAllForgive = (req, res) =>
+{
+    ActiveRequest.find()
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send({message: err.errmsg, error:err});
+      });
+}
+exports.getAllBPost = (req, res) =>
+{
+    Post.find({hidden: true})
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send({message: err.errmsg, error:err});
+      });
+}
+
+exports.acceptForgive = (req, res) =>
+{
+    User.findOneAndUpdate({_id: req.body.uid},
+        {$set: {blocked: false} }).then(()=>
+        {
+            res.status(200).send({message: "User Activated"});
+        });
+}
+
+exports.getFeed = (req, res) =>
+{
+    User.findOne({_id: req.userId}, {following: true}, (err, result) =>
+    {
+        const following = result.following;
+        feed = ['frs'];
+        Post.find({user : {$in : following}}).then(posts =>
+        {
+            feed = posts.concat(feed);
+            console.log(feed);
+        });
+    })
 }

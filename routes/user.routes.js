@@ -13,6 +13,21 @@ module.exports = function (app) {
   //get all bad words
   router.get("/bad", [authJwt.verifyToken, authJwt.isAdmin], controller.getAllBad);
 
+  //get posts feed
+  router.get("/feed", [authJwt.verifyToken], controller.getFeed);
+
+  //send activation request
+  router.post("/forgive", [authJwt.verifyToken], controller.forgive);
+
+  //send activation request
+  router.get("/forgive", [authJwt.verifyToken, authJwt.isAdmin], controller.getAllForgive);
+
+  //accept activation request
+  router.post("/forgive/accept", [authJwt.verifyToken, authJwt.isAdmin], controller.acceptForgive);
+
+  //get all bad posts for review
+  router.get("/badpost", [authJwt.verifyToken, authJwt.isAdmin], controller.getAllBPost);
+
   // Retrieve a single user with id
   router.get("/:id", [authJwt.verifyToken], controller.findOne);
 
