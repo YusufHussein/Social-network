@@ -224,3 +224,14 @@ exports.unComment = (req, res) =>
             res.status(200).send({message: "Deleted"});
         });
 }
+
+exports.getAllBad = (req, res) =>
+{
+    BadWord.find()
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send({message: err.errmsg, error:err});
+      });
+}

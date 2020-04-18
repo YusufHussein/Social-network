@@ -10,6 +10,9 @@ module.exports = function (app) {
   //Retrieve all posts
   router.get("/post", [authJwt.verifyToken, authJwt.isAdmin], controller.getAllPosts);
   
+  //get all bad words
+  router.get("/bad", [authJwt.verifyToken, authJwt.isAdmin], controller.getAllBad);
+
   // Retrieve a single user with id
   router.get("/:id", [authJwt.verifyToken], controller.findOne);
 
@@ -21,6 +24,7 @@ module.exports = function (app) {
 
   //add a word to bad words list
   router.post("/bad", [authJwt.verifyToken, authJwt.isAdmin], controller.addBad);
+
 
   //delete a word from bad words list
   router.delete("/bad/:word", [authJwt.verifyToken, authJwt.isAdmin], controller.delBad);
@@ -34,8 +38,10 @@ module.exports = function (app) {
   //Comment on a post
   router.post("/comment", [authJwt.verifyToken], controller.comment);
 
+  //Uncomment
   router.delete("/comment/:pid/:id", [authJwt.verifyToken], controller.unComment);
   
+
 
   app.use("/api/users", router);
 };
