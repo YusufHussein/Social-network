@@ -31,8 +31,10 @@ module.exports = function (app) {
   //Add new post
   router.post("/post", [authJwt.verifyToken], controller.addPost);
 
+  //Comment on a post
   router.post("/comment", [authJwt.verifyToken], controller.comment);
 
+  router.delete("/comment/:pid/:id", [authJwt.verifyToken], controller.unComment);
   
 
   app.use("/api/users", router);

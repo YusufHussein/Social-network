@@ -214,3 +214,13 @@ exports.comment = (req, res) =>
             res.status(200).send({message: "commented!"});
         });
 }
+
+exports.unComment = (req, res) =>
+{
+    Post.updateOne({_id: req.params.pid},
+        {$pull: {comments: {$and: [{_id: req.params.id}, {user: req.userId}]}}})
+        .then(()=>
+        {
+            res.status(200).send({message: "Deleted"});
+        });
+}
