@@ -32,8 +32,8 @@ exports.update = (req, res) =>
 }
 
 
-exports.findAll = (req, res) => {
-    //console.log("Test Find All")
+exports.findAll = (req, res) => 
+{
     User.find()
       .then(data => {
         res.send(data);
@@ -68,9 +68,33 @@ exports.addBad = (req, res) =>
                 res.status(500).send({ message: err });
                 return;
             }
-            res.status(200).send({ message: `'${bWord.word}' was added as a bad word`});
-        })
-    })
+            Post.find({hidden: false}).then(posts =>
+            {
+                posts.forEach((post) =>
+                {
+                    post_body = post.text;
+                    if(typeof post_body === 'string')
+                    {
+                        if(post_body.search(req.body.word)>=0)
+                        {
+                            Post.findOneAndUpdate({_id: post._id}, 
+                                {$set: {hidden: true}}).exec(); 
+                            
+                            User.findOneAndUpdate({_id: post.user},
+                                {$inc: {bad_post_count: 1} }).exec();
+                            User.findOne({_id: post.user}, {bad_post_count: 1},(err, result)=>
+                            {
+                                if(result.bad_post_count >= 20)
+                                    User.findOneAndUpdate({_id: post.user},
+                                        {$set: {blocked: true} }).exec();
+                            });
+                        }
+                    }
+                });
+                res.status(200).send({ message: `'${bWord.word}' was added as a bad word`});
+            });
+        });
+    });
 }
 
 exports.delBad = (req, res) =>
@@ -90,11 +114,17 @@ exports.addPost = (req, res) =>
     BadWord.find().then(words =>
     {
         const body = req.body.text;
-        const badCondition = (word) => body.search(word.word)>=0;
+        const badCondition = (word) => body.search(word.word) >= 0;
         if(words.some(badCondition)) 
         {
             User.findOneAndUpdate({_id: req.userId},
                     {$inc: {bad_post_count: 1} }).exec();
+            User.findOne({_id: req.userId}, {bad_post_count: 1},(err, result)=>
+            {
+                if(parseInt(result.bad_post_count) >= 20)
+                    User.findOneAndUpdate({_id: post.user},
+                        {$set: {blocked: true} }).exec();
+            }).exec();
             bad = true;
         }
 

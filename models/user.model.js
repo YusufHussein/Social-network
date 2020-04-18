@@ -21,6 +21,7 @@ const User = mongoose.model(
     location: String,
     dateOfBirth: {
       type: Date,
+      required: true
     },
     notifications: [
       {
