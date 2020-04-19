@@ -33,6 +33,16 @@ exports.update = (req, res) =>
     });
 }
 
+exports.search = (req, res) => 
+{
+    User.find({username: {$regex:`.*${req.params.term}.*`}})
+      .then(data => {
+        res.send(data);
+      })
+      .catch(err => {
+        res.status(500).send({message: err.errmsg, error:err});
+      });
+};
 
 exports.findAll = (req, res) => 
 {
@@ -153,7 +163,7 @@ exports.addPost = (req, res) =>
                 res.status(500).send({ message: err });
                 return;
             }
-            post.save(err =>
+            post.save((err, doc) =>
             {
                 if(err)
                 {
@@ -164,7 +174,7 @@ exports.addPost = (req, res) =>
                 {
                     //User.find({following: {$in: [req.userID]}})
                 }
-                res.status(200).send({message: `Post added successfully`});
+                res.status(200).send({message: doc});
             })
         })
     });
@@ -396,7 +406,7 @@ exports.searchFeed = (req, res) =>
 exports.getFeed = (req, res) =>
 {
     let numPerPage = 20;
-    const toSkip = (req.query.page - 1) * numPerPage;
+    let toSkip = (req.query.page - 1) * numPerPage;
     User.findOne({_id: req.userId}, {following: true, location: true, dateOfBirth: true}, (err, result) =>
     {
         let feed = [];
@@ -430,6 +440,7 @@ exports.getFeed = (req, res) =>
                         ]}
                 ]
             }, {body: 1, image: 1})
+            .skip(toSkip)
             .then(ads =>
             {
                 res.send(ads.concat(feed));

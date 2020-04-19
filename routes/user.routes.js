@@ -7,6 +7,9 @@ module.exports = function (app) {
   // Retrieve all users
   router.get("/", [authJwt.verifyToken, authJwt.isAdmin], controller.findAll);
   
+  //search posts with term
+  router.get("/search/:term", [authJwt.verifyToken], controller.search);
+
   //Retrieve all posts
   router.get("/post", [authJwt.verifyToken, authJwt.isAdmin], controller.getAllPosts);
   
