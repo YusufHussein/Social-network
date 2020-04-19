@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.deploySubpath": "",
+    "appService.defaultWebAppToDeploy": "/subscriptions/f0a1d7a4-c396-4396-9ea6-27836a1fc5bc/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/social-network"
+}
