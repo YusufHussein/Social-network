@@ -209,12 +209,11 @@ exports.toggleFollow = (req, res) =>
 
 exports.comment = (req, res) =>
 {
-    Post.updateOne({_id: req.body.pId},
+    Post.findOneAndUpdate({_id: req.body.pId},
         {$push: {comments: {user: req.userId, text: req.body.text}}},
-        err=> {
-            if(err)
-                console.log(err);
-            res.status(200).send({message: "commented!"});
+        { $new: true },
+            (err, result)=> {
+                res.send({ result });
         });
 }
 
