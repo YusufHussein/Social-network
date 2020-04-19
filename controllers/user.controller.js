@@ -396,12 +396,16 @@ exports.searchFeed = (req, res) =>
 
 exports.getFeed = (req, res) =>
 {
+    let numPerPage = 20;
+    const toSkip = (req.body.page - 1) * numPerPage;
     User.findOne({_id: req.userId}, {following: true, location: true, dateOfBirth: true}, (err, result) =>
     {
         let feed = [];
         let userAge = new Date().getFullYear() - result.dateOfBirth.getFullYear();
         Post.find({$or: [{user:{$in : result.following}}, {user:req.userId}]})
         .sort({date: -1})
+        .skip(toSkip)
+        .limit(numPerPage)
         .then(posts =>
         {
             feed = posts.concat(feed);
