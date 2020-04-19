@@ -7,6 +7,9 @@ const ActiveRequest = db.active_request;
 const bcrypt = require('bcryptjs');
 var jwt = require('../services/jwt');
 var mongoosePaginate = require('mongoose-pagination');
+const OneSignal = require("onesignal-node");
+const { appId, apiKey } = require("../config/onesignal.conig");
+const client = new OneSignal.Client(appId, apiKey);
 
 exports.update = (req, res) =>
 {
@@ -172,7 +175,34 @@ exports.addPost = (req, res) =>
                 }
                 if(req.body.notify)
                 {
-                    //User.find({following: {$in: [req.userID]}})
+                    User.find({ following: { $in: [req.userId] } })
+                    .then(async (followers) => {
+                      const username = await User.findOne({ _id: req.userId }).then(
+                        (user) => user.username
+                      );
+                      console.log(username);
+        
+                      console.log(followers.map((user) => user._id));
+                      const notification = {
+                        contents: {
+                          en: username + " added a new post",
+                        },
+                        include_external_user_ids: followers.map((user) => user._id),
+                        data: post,
+                      };
+                      client
+                        .createNotification(notification)
+                        .then((response) => {
+                          console.log(response.body);
+                        })
+                        .catch((e) => {
+                          console.log(e.statusCode);
+                          console.log(e.body);
+                        });
+                    })
+                    .catch((err) => {
+                      res.status(500).send({ message: err.errmsg, error: err });
+                    });
                 }
                 res.status(200).send({message: doc});
             })
