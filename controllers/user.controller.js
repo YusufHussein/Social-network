@@ -417,7 +417,15 @@ exports.getFeed = (req, res) =>
                             {$and: [{isGreater: true}, {age: {$lte: userAge}}]},
                             {$and: [{isGreater: false}, {age: {$gte: userAge}}]}
                         ]}
-                    ]}
+                    ]},
+                    {$and: 
+                        [
+                            {location: null},
+                            {$or: [
+                                {$and: [{isGreater: true}, {age: {$lte: userAge}}]},
+                                {$and: [{isGreater: false}, {age: {$gte: userAge}}]}
+                            ]}
+                        ]}
                 ]
             }, {body: 1, image: 1})
             .then(ads =>
