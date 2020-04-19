@@ -211,7 +211,7 @@ exports.comment = (req, res) =>
 {
     Post.findOneAndUpdate({_id: req.body.pId},
         {$push: {comments: {user: req.userId, text: req.body.text}}},
-        { $new: true },
+        { new: true },
             (err, result)=> {
                 res.send({ result });
         });
@@ -396,7 +396,7 @@ exports.searchFeed = (req, res) =>
 exports.getFeed = (req, res) =>
 {
     let numPerPage = 20;
-    const toSkip = (req.body.page - 1) * numPerPage;
+    const toSkip = (req.query.page - 1) * numPerPage;
     User.findOne({_id: req.userId}, {following: true, location: true, dateOfBirth: true}, (err, result) =>
     {
         let feed = [];
