@@ -59,7 +59,7 @@ isAdminOrSelf = (req, res, next) => {
       return;
     }
 
-    if(req.userID == req.params.id)
+    if(req.userId.toString() == req.params.id.toString())
     {//Self request
       next();
       return;
