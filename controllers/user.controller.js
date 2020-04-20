@@ -189,7 +189,12 @@ exports.addPost = (req, res) =>
                       res.status(500).send({ message: err.errmsg, error: err });
                     });
                 }
-                res.status(200).send({message: doc});
+
+                User.findById(req.userId).then((owner) => {
+                  doc = doc.toObject();
+                  doc.owner = owner;
+                  res.status(200).send({message: doc});
+                });
             })
         })
     });
@@ -238,7 +243,11 @@ exports.comment = (req, res) =>
         {$push: {comments: {user: req.userId, text: req.body.text}}},
         { new: true },
             (err, result)=> {
+              User.findById(req.userId).then((owner) => {
+                result = result.toObject();
+                result.owner = owner;
                 res.send({ result });
+              });
         });
 }
 
@@ -393,27 +402,93 @@ exports.searchFeed = (req, res) =>
         let userAge = new Date().getFullYear() - result.dateOfBirth.getFullYear();
         Post.find({$and: [{$or: [{user:{$in : result.following}}, {user:req.userId}]}, {text: {$regex : `.*${req.params.term}.*`}}]})
         .sort({date: -1})
-        .then(posts =>
-        {
-            feed = posts.concat(feed);
-            Adv.find({$or :
-                [
-                    {$and: [{location : result.location}, {age: null}]},
-                    {$and: [{location: null, age: null}]},
-                    {$and: 
-                    [
-                        {location: result.location},
-                        {$or: [
-                            {$and: [{isGreater: true}, {age: {$lte: userAge}}]},
-                            {$and: [{isGreater: false}, {age: {$gte: userAge}}]}
-                        ]}
-                    ]}
-                ]
-            }, {body: 1, image: 1})
-            .then(ads =>
-            {
-                res.send(ads.concat(feed));
-            });
+        .then(posts =>{
+          const ownersIds = posts.map((post) => post.user);
+          User.find({ _id: { $in: ownersIds } }).then((owners) => {
+            if (err) {
+              res.status(500).send({ message: err });
+              return;
+            }
+            const commentsOwnersIds = posts
+              .flatMap((post) => post.comments)
+              .map((comment) => comment.user);
+            User.find({ _id: { $in: commentsOwnersIds } }).then(
+              (commentsOwners) => {
+                posts = posts.map((post) => {
+                  post = post.toObject();
+                  post.owner = owners.find(
+                    (user) => user._id.toString() == post.user.toString()
+                  );
+                  post.comments = post.comments.map((comment) => {
+                    comment.owner = commentsOwners.find(
+                      (user) => user._id.toString() == post.user.toString()
+                    );
+                    return comment;
+                  });
+                  return post;
+                });
+
+                feed = posts.concat(feed);
+                Adv.find(
+                  {
+                    $or: [
+                      {
+                        $and: [{ location: result.location }, { age: null }],
+                      },
+                      { $and: [{ location: null, age: null }] },
+                      {
+                        $and: [
+                          { location: result.location },
+                          {
+                            $or: [
+                              {
+                                $and: [
+                                  { isGreater: true },
+                                  { age: { $lte: userAge } },
+                                ],
+                              },
+                              {
+                                $and: [
+                                  { isGreater: false },
+                                  { age: { $gte: userAge } },
+                                ],
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                      {
+                        $and: [
+                          { location: null },
+                          {
+                            $or: [
+                              {
+                                $and: [
+                                  { isGreater: true },
+                                  { age: { $lte: userAge } },
+                                ],
+                              },
+                              {
+                                $and: [
+                                  { isGreater: false },
+                                  { age: { $gte: userAge } },
+                                ],
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  { body: 1, image: 1 }
+                )
+                  .skip(toSkip)
+                  .then((ads) => {
+                    res.send(ads.concat(feed));
+                  });
+              }
+            );
+          });
         });
     });
 }
