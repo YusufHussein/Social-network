@@ -237,19 +237,31 @@ exports.toggleFollow = (req, res) =>
     })
 }
 
-exports.comment = (req, res) =>
-{
-    Post.findOneAndUpdate({_id: req.body.pId},
-        {$push: {comments: {user: req.userId, text: req.body.text}}},
-        { new: true },
-            (err, result)=> {
-              User.findById(req.userId).then((owner) => {
-                result = result.toObject();
-                result.owner = owner;
-                res.send({ result });
-              });
-        });
-}
+exports.comment = (req, res) => {
+  Post.findOneAndUpdate(
+    { _id: req.body.pId },
+    { $push: { comments: { user: req.userId, text: req.body.text } } },
+    { new: true },
+    (err, result) => {
+      User.findById(req.userId).then((owner) => {
+        result = result.toObject();
+        result.owner = owner;
+        const commentsOwnersIds = result.comments.map((comment) => comment.user);
+        User.find({ _id: { $in: commentsOwnersIds } }).then(
+          (commentsOwners) => {
+            result.comments = result.comments.map((comment) => {
+              comment.owner = commentsOwners.find(
+                (user) => user._id.toString() == result.user.toString()
+              );
+              return comment;
+            });
+            res.send({ result });
+          }
+        );
+      });
+    }
+  );
+};
 
 exports.unComment = (req, res) =>
 {
@@ -482,7 +494,6 @@ exports.searchFeed = (req, res) =>
                   },
                   { body: 1, image: 1 }
                 )
-                  .skip(toSkip)
                   .then((ads) => {
                     res.send(ads.concat(feed));
                   });
