@@ -434,104 +434,108 @@ exports.searchFeed = (req, res) =>
 }
 
 exports.getFeed = (req, res) => {
-    let numPerPage = 20;
-    let toSkip = (req.query.page - 1) * numPerPage;
-    User.findOne(
-      { _id: req.userId },
-      { following: true, location: true, dateOfBirth: true },
-      (err, result) => {
-        let feed = [];
-        let userAge = new Date().getFullYear() - result.dateOfBirth.getFullYear();
-        Post.find({
-          $or: [{ user: { $in: result.following } }, { user: req.userId }],
-        })
-          .sort({ date: -1 })
-          .skip(toSkip)
-          .limit(numPerPage)
-          .then((posts) => {
-            const ownersIds = posts.map((post) => post.userId);
-            User.find({ _id: { $in: ownersIds } }).then((owners) => {
-              if (err) {
-                res.status(500).send({ message: err });
-                return;
-              }
-              console.log(posts);
-              const commentsOwnersIds = post.comments.map(
-                (comment) => comment.user
-              );
-              User.findOne({ _id: { $in: commentsOwnersIds } }).then(
-                (commentsOwners) => {
-                  posts = posts.map((post) => {
-                    post.owner = owners.find((user) => user._id == post.user);
-                    post.comments = post.comments.map((comment) => {
-                      comment.owner = commentsOwners.find(
-                        (user) => user._id == post.user
-                      );
-                    });
-                    console.log(posts)
-                    feed = posts.concat(feed);
-                    Adv.find(
+  let numPerPage = 20;
+  let toSkip = (req.query.page - 1) * numPerPage;
+  User.findOne(
+    { _id: req.userId },
+    { following: true, location: true, dateOfBirth: true },
+    (err, result) => {
+      let feed = [];
+      let userAge = new Date().getFullYear() - result.dateOfBirth.getFullYear();
+      Post.find({
+        $or: [{ user: { $in: result.following } }, { user: req.userId }],
+      })
+        .sort({ date: -1 })
+        .skip(toSkip)
+        .limit(numPerPage)
+        .then((posts) => {
+          const ownersIds = posts.map((post) => post.user);
+          User.find({ _id: { $in: ownersIds } }).then((owners) => {
+            if (err) {
+              res.status(500).send({ message: err });
+              return;
+            }
+            const commentsOwnersIds = posts
+              .flatMap((post) => post.comments)
+              .map((comment) => comment.user);
+            User.find({ _id: { $in: commentsOwnersIds } }).then(
+              (commentsOwners) => {
+                posts = posts.map((post) => {
+                  post = post.toObject();
+                  post.owner = owners.find(
+                    (user) => user._id.toString() == post.user.toString()
+                  );
+                  post.comments = post.comments.map((comment) => {
+                    comment.owner = commentsOwners.find(
+                      (user) => user._id.toString() == post.user.toString()
+                    );
+                    return comment;
+                  });
+                  return post;
+                });
+
+                feed = posts.concat(feed);
+                Adv.find(
+                  {
+                    $or: [
                       {
-                        $or: [
+                        $and: [{ location: result.location }, { age: null }],
+                      },
+                      { $and: [{ location: null, age: null }] },
+                      {
+                        $and: [
+                          { location: result.location },
                           {
-                            $and: [{ location: result.location }, { age: null }],
-                          },
-                          { $and: [{ location: null, age: null }] },
-                          {
-                            $and: [
-                              { location: result.location },
+                            $or: [
                               {
-                                $or: [
-                                  {
-                                    $and: [
-                                      { isGreater: true },
-                                      { age: { $lte: userAge } },
-                                    ],
-                                  },
-                                  {
-                                    $and: [
-                                      { isGreater: false },
-                                      { age: { $gte: userAge } },
-                                    ],
-                                  },
+                                $and: [
+                                  { isGreater: true },
+                                  { age: { $lte: userAge } },
                                 ],
                               },
-                            ],
-                          },
-                          {
-                            $and: [
-                              { location: null },
                               {
-                                $or: [
-                                  {
-                                    $and: [
-                                      { isGreater: true },
-                                      { age: { $lte: userAge } },
-                                    ],
-                                  },
-                                  {
-                                    $and: [
-                                      { isGreater: false },
-                                      { age: { $gte: userAge } },
-                                    ],
-                                  },
+                                $and: [
+                                  { isGreater: false },
+                                  { age: { $gte: userAge } },
                                 ],
                               },
                             ],
                           },
                         ],
                       },
-                      { body: 1, image: 1 }
-                    )
-                      .skip(toSkip)
-                      .then((ads) => {
-                        res.send(ads.concat(feed));
-                      });
+                      {
+                        $and: [
+                          { location: null },
+                          {
+                            $or: [
+                              {
+                                $and: [
+                                  { isGreater: true },
+                                  { age: { $lte: userAge } },
+                                ],
+                              },
+                              {
+                                $and: [
+                                  { isGreater: false },
+                                  { age: { $gte: userAge } },
+                                ],
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  { body: 1, image: 1 }
+                )
+                  .skip(toSkip)
+                  .then((ads) => {
+                    res.send(ads.concat(feed));
                   });
-                }
-              );
-            });
+              }
+            );
           });
-      }
-    );
-  };
+        });
+    }
+  );
+};
